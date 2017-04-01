@@ -59,6 +59,16 @@ public class FileSelectListAdapter extends BaseAdapter {
         return root;
     }
 
+    //TODO : make sure that removing below lines from MARKER doesn't cause issue
+    /*
+        if (root.getAbsolutePath().equals("/")) {
+           files = DictionaryFinder.FALLBACK_ROOT_LS;
+        }
+        else {
+           files = EMPTY;
+        }
+
+     */
     void setRoot(File root) {
         this.root = root;
         if (root != null) {
@@ -66,12 +76,7 @@ public class FileSelectListAdapter extends BaseAdapter {
         }
         files = root.listFiles(fileFilter);
         if (files == null) {
-            if (root.getAbsolutePath().equals("/")) {
-                files = DictionaryFinder.FALLBACK_ROOT_LS;
-            }
-            else {
-                files = EMPTY;
-            }
+                files = EMPTY;           // TODO : MARKER
         }
         Arrays.sort(files, comparator);
         notifyDataSetChanged();
