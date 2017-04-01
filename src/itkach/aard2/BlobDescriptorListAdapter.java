@@ -82,10 +82,10 @@ public class BlobDescriptorListAdapter extends BaseAdapter {
         TextView titleView = (TextView) view
                 .findViewById(R.id.blob_descriptor_key);
         titleView.setText(item.key);
-        TextView sourceView = (TextView) view
-                .findViewById(R.id.blob_descriptor_source);
+       // TextView sourceView = (TextView) view
+       //         .findViewById(R.id.blob_descriptor_source);
         Slob slob = list.resolveOwner(item);
-        sourceView.setText(slob == null ? "???" : slob.getTags().get("label"));
+       // sourceView.setText(slob == null ? "???" : slob.getTags().get("label"));
         TextView timestampView = (TextView) view
                 .findViewById(R.id.blob_descriptor_timestamp);
         timestampView.setText(timestamp);

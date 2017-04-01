@@ -146,8 +146,8 @@ public class BlobListAdapter extends BaseAdapter {
 
         TextView titleView = (TextView)view.findViewById(R.id.blob_descriptor_key);
         titleView.setText(item.key);
-        TextView sourceView = (TextView)view.findViewById(R.id.blob_descriptor_source);
-        sourceView.setText(slob == null ? "???" : slob.getTags().get("label"));
+        //TextView sourceView = (TextView)view.findViewById(R.id.blob_descriptor_source);
+        //sourceView.setText(slob == null ? "???" : slob.getTags().get("label"));
         TextView timestampView = (TextView)view.findViewById(R.id.blob_descriptor_timestamp);
         timestampView.setText("");
         timestampView.setVisibility(View.GONE);

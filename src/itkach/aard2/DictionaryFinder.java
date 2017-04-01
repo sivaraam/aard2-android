@@ -10,51 +10,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static android.os.Environment.getExternalStorageDirectory;
 
-
-public class DictionaryFinder {
-
-    public final static File[] FALLBACK_ROOT_LS = new File[] {
-            new File("/mnt"),
-            new File("/sdcard"),
-            new File("/storage"),
-            getExternalStorageDirectory()};
-
+class DictionaryFinder {
 
     private final static String T = "DictionaryFinder";
-
-    private Set<String>         excludedScanDirs   = new HashSet<String>() {
-        {
-            add("/proc");
-            add("/dev");
-            add("/etc");
-            add("/sys");
-            add("/acct");
-            add("/cache");
-        }
-    };
 
     private boolean cancelRequested;
 
     private FilenameFilter fileFilter = new FilenameFilter() {
         public boolean accept(File dir, String filename) {
-            return filename.toLowerCase().endsWith(
-                    ".slob") || new File(dir, filename).isDirectory();
+            return filename.toLowerCase().endsWith(".slob") || new File(dir, filename).isDirectory();
         }
     };
 
-    private List<File> discover() {
-        File scanRoot = new File("/");
-        File[] files = scanRoot.listFiles(fileFilter);
+    private List<File> discover(File location) {
         List<File> result = new ArrayList<File>();
 
-        if (files == null || files.length == 0) {
-            files = FALLBACK_ROOT_LS;
-        }
-        for (File f : files) {
-            result.addAll(scanDir(f));
-        }
+        result.addAll(scanDir(location));
+
         return result;
     }
 
@@ -63,24 +36,17 @@ public class DictionaryFinder {
             return Collections.emptyList();
         }
         String absolutePath = dir.getAbsolutePath();
-        if (excludedScanDirs.contains(absolutePath)) {
-            Log.d(T, String.format("%s is excluded", absolutePath));
-            return Collections.emptyList();
-        }
 
-        if (dir.isHidden()) {
-            Log.d(T, String.format("%s is hidden", absolutePath));
-            return Collections.emptyList();
-        }
         Log.d(T, "Scanning " + absolutePath);
         List<File> candidates = new ArrayList<File>();
         File[] files = dir.listFiles(fileFilter);
+
         if (files != null) {
-            for (int i = 0; i < files.length; i++) {
+            for (File file : files) {
                 if (cancelRequested) {
                     break;
                 }
-                File file = files[i];
+
                 Log.d(T, "Considering " + file.getAbsolutePath());
                 if (file.isDirectory()) {
                     Log.d(T, "Directory: " + file.getAbsolutePath());
@@ -89,8 +55,7 @@ public class DictionaryFinder {
                     if (!file.isHidden() && file.isFile()) {
                         Log.d(T, "Candidate: " + file.getAbsolutePath());
                         candidates.add(file);
-                    }
-                    else {
+                    } else {
                         Log.d(T, "Hidden or not a file: " + file.getAbsolutePath());
                     }
                 }
@@ -99,12 +64,13 @@ public class DictionaryFinder {
         return candidates;
     }
 
-    synchronized List<SlobDescriptor> findDictionaries() {
+    synchronized List<SlobDescriptor> findDictionaries(File location) {
         cancelRequested = false;
         Log.d(T, "starting dictionary discovery");
         long t0 = System.currentTimeMillis();
-        List<File> candidates = discover();
+        List<File> candidates = discover(location);
         Log.d(T, "dictionary discovery took " + (System.currentTimeMillis() - t0));
+
         List<SlobDescriptor> descriptors = new ArrayList<SlobDescriptor>();
         Set<String> seen = new HashSet<String>();
         for (File f : candidates) {
@@ -121,7 +87,7 @@ public class DictionaryFinder {
         return descriptors;
     }
 
-    public void cancel() {
+    void cancel() {
         cancelRequested = true;
     }
 }

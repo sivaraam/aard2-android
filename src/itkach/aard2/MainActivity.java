@@ -72,20 +72,24 @@ public class MainActivity extends FragmentActivity implements
         tabIcons[1] = FontIconDrawable.inflate(this, R.xml.ic_tab_bookmark);
         tabIcons[2] = FontIconDrawable.inflate(this, R.xml.ic_tab_history);
         tabIcons[3] = FontIconDrawable.inflate(this, R.xml.ic_tab_dictionary);
-        tabIcons[4] = FontIconDrawable.inflate(this, R.xml.ic_tab_settings);
+        //tabIcons[4] = FontIconDrawable.inflate(this, R.xml.ic_tab_settings);
         // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < appSectionsPagerAdapter.getCount(); i++) {
-            Tab tab = actionBar.newTab();
-            tab.setTabListener(this);
-            tab.setIcon(tabIcons[i]);
-            actionBar.addTab(tab);
+     //   int count=0;
+        for (int i = 0; i < appSectionsPagerAdapter.getCount()-1; i++) {
+            //if(count!=3) {
+                Tab tab = actionBar.newTab();
+                tab.setTabListener(this);
+                tab.setIcon(tabIcons[i]);
+                actionBar.addTab(tab);
+       //     }
+       //     count++;
         }
 
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
         } else {
             if (app.dictionaries.size() == 0) {
-                viewPager.setCurrentItem(3);
+                viewPager.setCurrentItem(0);
                 DictionariesFragment df = (DictionariesFragment) appSectionsPagerAdapter.getItem(3);
                 df.findDictionaries();
             }
@@ -260,7 +264,7 @@ public class MainActivity extends FragmentActivity implements
         BlobDescriptorListFragment tabBookmarks;
         BlobDescriptorListFragment tabHistory;
         DictionariesFragment       tabDictionaries;
-        SettingsFragment           tabSettings;
+  //      SettingsFragment           tabSettings;
 
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -268,9 +272,10 @@ public class MainActivity extends FragmentActivity implements
             tabBookmarks = new BookmarksFragment();
             tabHistory = new HistoryFragment();
             tabDictionaries = new DictionariesFragment();
-            tabSettings = new SettingsFragment();
+      //      tabSettings = new SettingsFragment();
             fragments = new Fragment[] { tabLookup, tabBookmarks, tabHistory,
-                    tabDictionaries, tabSettings };
+                    tabDictionaries};
+            //tabSettings };
         }
 
         @Override

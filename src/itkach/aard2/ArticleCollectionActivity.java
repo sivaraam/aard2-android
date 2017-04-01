@@ -69,7 +69,7 @@ public class ArticleCollectionActivity extends FragmentActivity
         app.push(this);
         final ActionBar actionBar = getActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setSubtitle("...");
+        //actionBar.setSubtitle("...");
         final Intent intent = getIntent();
         final int position = intent.getIntExtra("position", 0);
 
@@ -297,15 +297,15 @@ public class ArticleCollectionActivity extends FragmentActivity
         Log.d("updateTitle", ""+blob);
         ActionBar actionBar = getActionBar();
         if (blob != null) {
-            String dictLabel = blob.owner.getTags().get("label");
-            actionBar.setTitle(dictLabel);
+            //String dictLabel = blob.owner.getTags().get("label");
+            actionBar.setTitle(pageTitle);
             Application app = (Application)getApplication();
             app.history.add(app.getUrl(blob));
         }
         else {
             actionBar.setTitle("???");
         }
-        actionBar.setSubtitle(pageTitle);
+       // actionBar.setSubtitle(pageTitle);
     }
 
 

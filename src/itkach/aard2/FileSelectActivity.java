@@ -43,7 +43,7 @@ public class FileSelectActivity extends ListActivity {
                 } else {
                     path = "";
                 }
-                actionBar.setSubtitle(path);
+                //actionBar.setSubtitle(path);
                 savePath(path);
             }
         });

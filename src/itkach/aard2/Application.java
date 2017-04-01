@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -20,9 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shamanland.fonticon.FontIconTypefaceHolder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,22 +46,17 @@ public class Application extends android.app.Application {
     public static final String LOCALHOST = "127.0.0.1";
     public static final String CONTENT_URL_TEMPLATE = "http://" + LOCALHOST + ":%s%s";
 
+    private File tamilSlobDir;
+
     private Slobber                         slobber;
 
     BlobDescriptorList                      bookmarks;
     BlobDescriptorList                      history;
     SlobDescriptorList                      dictionaries;
 
-    private static int                      PREFERRED_PORT = 8013;
     private int                             port = -1;
 
     BlobListAdapter                         lastResult;
-
-    private DescriptorStore<BlobDescriptor> bookmarkStore;
-    private DescriptorStore<BlobDescriptor> historyStore;
-    private DescriptorStore<SlobDescriptor> dictStore;
-
-    private ObjectMapper                    mapper;
 
     private String                          lookupQuery = "";
 
@@ -81,6 +79,7 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        copyTamilDictionary();
         if(Build.VERSION.SDK_INT >= 19) {
             try {
                 Method setWebContentsDebuggingEnabledMethod = WebView.class.getMethod(
@@ -99,13 +98,16 @@ public class Application extends android.app.Application {
 
         FontIconTypefaceHolder.init(getAssets(), "fontawesome-4.2.0.ttf");
 
-        mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
                 false);
-        dictStore = new DescriptorStore<SlobDescriptor>(mapper, getDir("dictionaries", MODE_PRIVATE));
-        bookmarkStore = new DescriptorStore<BlobDescriptor>(mapper, getDir(
+
+        DescriptorStore<SlobDescriptor> dictStore = new DescriptorStore<SlobDescriptor>(mapper, getDir("dictionaries", MODE_PRIVATE));
+
+        DescriptorStore<BlobDescriptor> bookmarkStore = new DescriptorStore<BlobDescriptor>(mapper, getDir(
                 "bookmarks", MODE_PRIVATE));
-        historyStore = new DescriptorStore<BlobDescriptor>(mapper, getDir(
+
+        DescriptorStore<BlobDescriptor> historyStore = new DescriptorStore<BlobDescriptor>(mapper, getDir(
                 "history", MODE_PRIVATE));
         slobber = new Slobber();
 
@@ -132,7 +134,6 @@ public class Application extends android.app.Application {
         String initialQuery = prefs().getString("query", "");
 
         lastResult = new BlobListAdapter(this);
-
         dictionaries = new SlobDescriptorList(this, dictStore);
         bookmarks = new BlobDescriptorList(this, bookmarkStore);
         history = new BlobDescriptorList(this, historyStore);
@@ -165,7 +166,44 @@ public class Application extends android.app.Application {
         history.load();
     }
 
-    static String readTextFile(InputStream is, int maxSize) throws IOException, FileTooBigException {
+    private void copyTamilDictionary() {
+        if(isFirstRun()) {
+        AssetManager assetManager = getAssets();
+        tamilSlobDir = getDir("Slobs", MODE_PRIVATE);
+            String TAMIL_DICTIONARY_SLOB_NAME = "tawiktionary.slob";
+            File tamilBlobHandle = new File(tamilSlobDir, TAMIL_DICTIONARY_SLOB_NAME);
+
+        try {
+            InputStream in = assetManager.open(TAMIL_DICTIONARY_SLOB_NAME);
+            FileOutputStream out = new FileOutputStream(tamilBlobHandle);
+            copyFile(in, out);
+        }
+        catch (IOException ex) {
+            Log.d(TAG, ex.getMessage());
+        }
+        }
+
+    }
+
+    boolean isFirstRun() {
+        if(prefs().getBoolean("first_run", true)) {
+            prefs().edit().putBoolean("first_run", false).apply();
+            return true;
+        }
+        else
+            return false;
+    }
+
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
+
+    static String readTextFile(InputStream is, int maxSize) throws IOException {
         InputStreamReader reader = new InputStreamReader(is, "UTF-8");
         StringWriter sw = new StringWriter();
         char[] buf = new char[16384];
@@ -187,6 +225,7 @@ public class Application extends android.app.Application {
 
 
     private void startWebServer() {
+        int PREFERRED_PORT = 8013;
         int portCandidate = PREFERRED_PORT;
         try {
             slobber.start("127.0.0.1", portCandidate);
@@ -259,7 +298,7 @@ public class Application extends android.app.Application {
 
 
     Slob[] getActiveSlobs() {
-        List<Slob> result = new ArrayList(dictionaries.size());
+        List<Slob> result = new ArrayList<Slob>(dictionaries.size());
         for (SlobDescriptor sd : dictionaries) {
             if (sd.active) {
                 Slob s = slobber.getSlob(sd.id);
@@ -269,10 +308,10 @@ public class Application extends android.app.Application {
             }
         }
         return result.toArray(new Slob[result.size()]);
-    };
+    }
 
     Slob[] getFavoriteSlobs() {
-        List<Slob> result = new ArrayList(dictionaries.size());
+        List<Slob> result = new ArrayList<Slob>(dictionaries.size());
         for (SlobDescriptor sd : dictionaries) {
             if (sd.active && sd.priority > 0) {
                 Slob s = slobber.getSlob(sd.id);
@@ -282,7 +321,7 @@ public class Application extends android.app.Application {
             }
         }
         return result.toArray(new Slob[result.size()]);
-    };
+    }
 
 
     Iterator<Blob> find(String key) {
@@ -316,7 +355,7 @@ public class Application extends android.app.Application {
         final SharedPreferences prefs = prefs();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(Application.PREF_RANDOM_FAV_LOOKUP, value);
-        editor.commit();
+        editor.apply();
     }
 
     Blob random() {
@@ -333,7 +372,7 @@ public class Application extends android.app.Application {
         final SharedPreferences prefs = prefs();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(Application.PREF_USE_VOLUME_FOR_NAV, value);
-        editor.commit();
+        editor.apply();
     }
 
     String getUrl(Blob blob) {
@@ -362,7 +401,7 @@ public class Application extends android.app.Application {
         discoveryThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                final List<SlobDescriptor> result = dictFinder.findDictionaries();
+                final List<SlobDescriptor> result = dictFinder.findDictionaries(tamilSlobDir);
                 discoveryThread = null;
                 Handler h = new Handler(Looper.getMainLooper());
                 h.post(new Runnable() {
