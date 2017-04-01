@@ -13,8 +13,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-sourceCompatibility = '1.7'
-
 repositories {
     mavenCentral()
     flatDir {
@@ -76,9 +74,9 @@ android {
 }
 
 dependencies {
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.4+'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.4+'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4+'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.4'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4'
     compile 'com.shamanland:fonticon:0.1.8'
     compile project(':slobj')
     compile project(':slobber')
