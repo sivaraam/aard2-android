@@ -198,7 +198,7 @@ public class ArticleCollectionActivity extends FragmentActivity
         data.setData(result);
         return new ArticleCollectionPagerAdapter(
                 app, data, blobToBlob, getSupportFragmentManager());
-    };
+    }
 
     private ArticleCollectionPagerAdapter createFromLastResult(Application app) {
         return new ArticleCollectionPagerAdapter(
@@ -262,10 +262,6 @@ public class ArticleCollectionActivity extends FragmentActivity
         }
         return new ArticleCollectionPagerAdapter(
                 app, data, blobToBlob, getSupportFragmentManager());
-    }
-
-    private Iterator<Blob> stemLookup(Application app, String lookupKey) {
-        return this.stemLookup(app, lookupKey, null);
     }
 
     private Iterator<Blob> stemLookup(Application app, String lookupKey, String preferredSlobId) {

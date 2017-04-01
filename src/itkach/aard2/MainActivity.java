@@ -73,16 +73,14 @@ public class MainActivity extends FragmentActivity implements
         tabIcons[2] = FontIconDrawable.inflate(this, R.xml.ic_tab_history);
         tabIcons[3] = FontIconDrawable.inflate(this, R.xml.ic_tab_dictionary);
         //tabIcons[4] = FontIconDrawable.inflate(this, R.xml.ic_tab_settings);
-        // For each of the sections in the app, add a tab to the action bar.
-     //   int count=0;
+
+        // For each of the sections in the app, except for the dictionaries section
+        // add a tab to the action bar.
         for (int i = 0; i < appSectionsPagerAdapter.getCount()-1; i++) {
-            //if(count!=3) {
                 Tab tab = actionBar.newTab();
                 tab.setTabListener(this);
                 tab.setIcon(tabIcons[i]);
                 actionBar.addTab(tab);
-       //     }
-       //     count++;
         }
 
         if (savedInstanceState != null) {
@@ -264,7 +262,7 @@ public class MainActivity extends FragmentActivity implements
         BlobDescriptorListFragment tabBookmarks;
         BlobDescriptorListFragment tabHistory;
         DictionariesFragment       tabDictionaries;
-  //      SettingsFragment           tabSettings;
+        //SettingsFragment           tabSettings;
 
         public AppSectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -272,9 +270,8 @@ public class MainActivity extends FragmentActivity implements
             tabBookmarks = new BookmarksFragment();
             tabHistory = new HistoryFragment();
             tabDictionaries = new DictionariesFragment();
-      //      tabSettings = new SettingsFragment();
-            fragments = new Fragment[] { tabLookup, tabBookmarks, tabHistory,
-                    tabDictionaries};
+            //tabSettings = new SettingsFragment();
+            fragments = new Fragment[] { tabLookup, tabBookmarks, tabHistory, tabDictionaries };
             //tabSettings };
         }
 

@@ -1,8 +1,6 @@
 package itkach.aard2;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -21,7 +19,6 @@ import android.widget.Toast;
 import com.shamanland.fonticon.FontIconDrawable;
 
 import java.io.File;
-
 import static android.view.View.OnClickListener;
 
 public class DictionariesFragment extends BaseListFragment {
