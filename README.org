@@ -1,5 +1,7 @@
   தமிழ் அகராதி is a modification of [[https://github.com/itkach/aard2-android/][Aard 2 for Android]]
-  customised to lookup Tamil meanings of Tamil and English words.
+  customised to lookup Tamil meanings of Tamil and English words. This is just a sub,odule of the
+  application. The main projecct of the application could be found at 
+  [[https://github.com/sivaraam/TamilDictApp][TamilDictApp]]
 
 ** Features
 
