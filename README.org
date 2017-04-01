@@ -1,6 +1,6 @@
   தமிழ் அகராதி (Tamil Dictionary) is a modification of [[https://github.com/itkach/aard2-android/][Aard 2 for Android]]
-  customised to lookup Tamil meanings of Tamil and English words. This is just a sub,odule of the
-  application. The main projecct of the application could be found at 
+  customised to lookup Tamil meanings of Tamil and English words. This is just a submodule of the
+  application. The main project of the application could be found at
   [[https://github.com/sivaraam/TamilDictApp][TamilDictApp]]
 
 ** Features
@@ -26,10 +26,6 @@
     Dictionaries may include alternate style sheets. User may
     also add custom style sheets via Settings tab. Dictionary built-in and
     user styles appear in the "Style..." menu in article view.
-
-*** Math
-    Mathematical [[https://meta.wikimedia.org/wiki/Help:Displaying_a_formula][formulas in Wikipedia]] articles are rendered as text
-    using [[http://www.mathjax.org/][MathJax]] - scalable, styleable, beautiful on any screen.
 
 *** Random Article
     Tapping application logo in main activity finds a random title
