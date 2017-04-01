@@ -1,6 +1,7 @@
 package itkach.aard2;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -71,15 +72,16 @@ public class Application extends android.app.Application {
     static final String PREF_UI_THEME_LIGHT             = "light";
     static final String PREF_UI_THEME_DARK              = "dark";
     static final String PREF_USE_VOLUME_FOR_NAV         = "useVolumeForNav";
-
-    private static final String PREF_TAMIL_SLOB_PATH    = "tamilSlobPath" ;
+    static final String PREF_TAMIL_SLOB_PATH            = "tamilSlobPath" ;
 
     private static final String TAG = Application.class.getSimpleName();
 
     @Override
     public void onCreate() {
         super.onCreate();
+        setTamilSlobDirPath();
         copyTamilDictionary();
+
         if(Build.VERSION.SDK_INT >= 19) {
             try {
                 Method setWebContentsDebuggingEnabledMethod = WebView.class.getMethod(
@@ -164,34 +166,19 @@ public class Application extends android.app.Application {
         lookup(initialQuery, false);
         bookmarks.load();
         history.load();
+        new ProgressDialog(this, R.string.action_lookup);
     }
 
-    private void copyTamilDictionary() {
-        if(isFirstRun()) {
-        AssetManager assetManager = getAssets();
-        File tamilSlobDir = getDir("Slobs", MODE_PRIVATE);
-
+    void setTamilSlobDirPath() {
+        File tamilSlobDir = getFilesDir();
         //Put the location of the tamil Slob dir in Shared Preference for later use
         prefs().edit().putString(PREF_TAMIL_SLOB_PATH, tamilSlobDir.getAbsolutePath()).apply();
-        String TAMIL_DICTIONARY_SLOB_NAME = "tawiktionary.slob";
-
-        File tamilBlobHandle = new File(tamilSlobDir, TAMIL_DICTIONARY_SLOB_NAME);
-
-        try {
-            InputStream in = assetManager.open(TAMIL_DICTIONARY_SLOB_NAME);
-            FileOutputStream out = new FileOutputStream(tamilBlobHandle);
-            copyFile(in, out);
-        }
-        catch (IOException ex) {
-            Log.d(TAG, ex.getMessage());
-        }
-        }
-
     }
 
     boolean isFirstRun() {
-        if(prefs().getBoolean("first_run", true)) {
-            prefs().edit().putBoolean("first_run", false).apply();
+        final String PREF_FRIST_RUN = "firstRun";
+        if(prefs().getBoolean(PREF_FRIST_RUN, true)) {
+            prefs().edit().putBoolean(PREF_FRIST_RUN, false).apply();
             return true;
         }
         else
@@ -206,6 +193,27 @@ public class Application extends android.app.Application {
             out.write(buffer, 0, read);
         }
     }
+
+    private void copyTamilDictionary() {
+        if(isFirstRun()) {
+            AssetManager assetManager = getAssets();
+            String TAMIL_DICTIONARY_SLOB_NAME = "tawiktionary.slob";
+            String tamilSlobDir = prefs().getString(PREF_TAMIL_SLOB_PATH, null);
+            assert tamilSlobDir != null;
+
+            File tamilBlobHandle = new File(tamilSlobDir, TAMIL_DICTIONARY_SLOB_NAME);
+            try {
+                InputStream in = assetManager.open(TAMIL_DICTIONARY_SLOB_NAME);
+                OutputStream out = openFileOutput(TAMIL_DICTIONARY_SLOB_NAME, MODE_PRIVATE);
+                copyFile(in, out);
+            }
+            catch (IOException ex) {
+                Log.d(TAG, ex.getMessage());
+            }
+        }
+
+    }
+
 
     static String readTextFile(InputStream is, int maxSize) throws IOException {
         InputStreamReader reader = new InputStreamReader(is, "UTF-8");
@@ -391,11 +399,7 @@ public class Application extends android.app.Application {
     private Thread discoveryThread;
     private DictionaryFinder dictFinder = new DictionaryFinder();
 
-    synchronized void cancelFindDictionaries() {
-        dictFinder.cancel();
-    }
-
-    synchronized void findDictionaries(final DictionaryDiscoveryCallback callback) {
+    synchronized void findDictionaries() {
         if (discoveryThread != null) {
             throw new RuntimeException(
                     "Dictionary discovery is already running");
@@ -415,7 +419,6 @@ public class Application extends android.app.Application {
                     @Override
                     public void run() {
                         dictionaries.addAll(result);
-                        callback.onDiscoveryFinished();
                     }
                 });
             }

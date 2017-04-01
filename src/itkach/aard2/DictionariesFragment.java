@@ -29,24 +29,6 @@ public class DictionariesFragment extends BaseListFragment {
 
     private boolean findDictionariesOnAttach = false;
 
-    private class DiscoveryProgressDialog extends ProgressDialog {
-
-        DiscoveryProgressDialog(Context context) {
-            super(context);
-            setIndeterminate(true);
-            setCancelable(false);
-            setTitle(getString(R.string.dictionaries_please_wait));
-            setMessage(getString(R.string.dictionaries_scanning_device));
-        }
-
-        @Override
-        public void onBackPressed() {
-            final Application app = (Application)getActivity().getApplication();
-            app.cancelFindDictionaries();
-        }
-    }
-
-
     protected int getEmptyIcon() {
         return R.xml.ic_empty_view_dictionary;
     }
@@ -129,14 +111,7 @@ public class DictionariesFragment extends BaseListFragment {
         }
         this.findDictionariesOnAttach = false;
         final Application app = ((Application)activity.getApplication());
-        final ProgressDialog p = new DiscoveryProgressDialog(getActivity());
-        app.findDictionaries(new DictionaryDiscoveryCallback() {
-            @Override
-            public void onDiscoveryFinished() {
-                p.dismiss();
-            }
-        });
-        p.show();
+        app.findDictionaries();
     }
 
 
