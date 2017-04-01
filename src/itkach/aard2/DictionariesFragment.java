@@ -3,7 +3,6 @@ package itkach.aard2;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -31,12 +30,11 @@ public class DictionariesFragment extends BaseListFragment {
 
     final static int FILE_SELECT_REQUEST = 17;
 
-    private DictionaryListAdapter listAdapter;
     private boolean findDictionariesOnAttach = false;
 
     private class DiscoveryProgressDialog extends ProgressDialog {
 
-        public DiscoveryProgressDialog(Context context) {
+        DiscoveryProgressDialog(Context context) {
             super(context);
             setIndeterminate(true);
             setCancelable(false);
@@ -69,7 +67,7 @@ public class DictionariesFragment extends BaseListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         final Application app = (Application)getActivity().getApplication();
-        listAdapter = new DictionaryListAdapter(app.dictionaries, getActivity());
+        DictionaryListAdapter listAdapter = new DictionaryListAdapter(app.dictionaries, getActivity());
         setListAdapter(listAdapter);
     }
 
@@ -124,6 +122,8 @@ public class DictionariesFragment extends BaseListFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    //COMPLETED check for a trouble as a result of change in DictionaryFinder class (see to do  there)
+    //Should have been resolved as a result of creating shared preference to store directory
     public void findDictionaries() {
         Activity activity = getActivity();
         if (activity == null) {

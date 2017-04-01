@@ -46,8 +46,6 @@ public class Application extends android.app.Application {
     public static final String LOCALHOST = "127.0.0.1";
     public static final String CONTENT_URL_TEMPLATE = "http://" + LOCALHOST + ":%s%s";
 
-    private File tamilSlobDir;
-
     private Slobber                         slobber;
 
     BlobDescriptorList                      bookmarks;
@@ -73,6 +71,8 @@ public class Application extends android.app.Application {
     static final String PREF_UI_THEME_LIGHT             = "light";
     static final String PREF_UI_THEME_DARK              = "dark";
     static final String PREF_USE_VOLUME_FOR_NAV         = "useVolumeForNav";
+
+    private static final String PREF_TAMIL_SLOB_PATH    = "tamilSlobPath" ;
 
     private static final String TAG = Application.class.getSimpleName();
 
@@ -169,9 +169,13 @@ public class Application extends android.app.Application {
     private void copyTamilDictionary() {
         if(isFirstRun()) {
         AssetManager assetManager = getAssets();
-        tamilSlobDir = getDir("Slobs", MODE_PRIVATE);
-            String TAMIL_DICTIONARY_SLOB_NAME = "tawiktionary.slob";
-            File tamilBlobHandle = new File(tamilSlobDir, TAMIL_DICTIONARY_SLOB_NAME);
+        File tamilSlobDir = getDir("Slobs", MODE_PRIVATE);
+
+        //Put the location of the tamil Slob dir in Shared Preference for later use
+        prefs().edit().putString(PREF_TAMIL_SLOB_PATH, tamilSlobDir.getAbsolutePath()).apply();
+        String TAMIL_DICTIONARY_SLOB_NAME = "tawiktionary.slob";
+
+        File tamilBlobHandle = new File(tamilSlobDir, TAMIL_DICTIONARY_SLOB_NAME);
 
         try {
             InputStream in = assetManager.open(TAMIL_DICTIONARY_SLOB_NAME);
@@ -391,8 +395,7 @@ public class Application extends android.app.Application {
         dictFinder.cancel();
     }
 
-    synchronized void findDictionaries(
-            final DictionaryDiscoveryCallback callback) {
+    synchronized void findDictionaries(final DictionaryDiscoveryCallback callback) {
         if (discoveryThread != null) {
             throw new RuntimeException(
                     "Dictionary discovery is already running");
@@ -401,6 +404,10 @@ public class Application extends android.app.Application {
         discoveryThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                String tamilSlobDirPath = prefs().getString(PREF_TAMIL_SLOB_PATH, null);
+                assert tamilSlobDirPath != null;
+
+                File tamilSlobDir = new File(tamilSlobDirPath);
                 final List<SlobDescriptor> result = dictFinder.findDictionaries(tamilSlobDir);
                 discoveryThread = null;
                 Handler h = new Handler(Looper.getMainLooper());
