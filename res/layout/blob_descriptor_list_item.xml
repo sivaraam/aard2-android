@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="22dp"
             android:text="Босния и Герцеговина на зимних Олимпийских играх 1998"
-            android:textSize="20sp" />
+            android:textSize="23sp" />
 
         <LinearLayout
             android:layout_width="match_parent"

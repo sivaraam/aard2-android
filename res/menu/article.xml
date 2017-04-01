@@ -16,11 +16,6 @@
           android:showAsAction="never" 
           />
 
-    <item android:id="@+id/action_load_remote_content"
-        android:title="@string/action_load_remote_content"
-        android:showAsAction="never"
-        />
-
     <item android:id="@+id/action_zoom_in"
           android:title="@string/action_zoom_in"
           android:showAsAction="never"
