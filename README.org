@@ -1,4 +1,7 @@
-  தமிழ் அகராதி (Tamil Dictionary) is a modification of [[https://github.com/itkach/aard2-android/][Aard 2 for Android]]
+** :warning: Warning :warning:
+This app isn't complete and shouldn't be used as it is the middle of modification. Use it at your own risk.
+
+தமிழ் அகராதி (Tamil Dictionary) is a modification of [[https://github.com/itkach/aard2-android/][Aard 2 for Android]]
   customised to lookup Tamil meanings of Tamil and English words. This is just a submodule of the
   application. The main project of the application could be found at
   [[https://github.com/sivaraam/TamilDictApp][TamilDictApp]]
